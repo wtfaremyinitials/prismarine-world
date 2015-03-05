@@ -17,7 +17,7 @@ var getRelativeCoords = function(location) {
 
 class World {
 
-    constuctor(chunkProvider) {
+    constuctor(seed, chunkProvider, chunkGenerator) {
         this.chunkProvider = chunkProvider;
         this.loadedChunks  = new Map();
     }
@@ -48,7 +48,12 @@ class World {
     }
 
     async loadChunk(x, y) {
-        var chunk = await this.chunkProvider.load(x, y);
+        var chunk;
+        try {
+            chunk = await this.chunkProvider.load(x, y);
+        } catch() {
+            chunk = await this.chunkGenerator.generate(x, y, this.seed);
+        }
         this.loadedChunks.set({ x, y }, chunk);
         return chunk;
     }
